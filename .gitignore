@@ -161,3 +161,6 @@ cython_debug/
 
 # DS store
 .DS_Store
+
+
+./alpaca_finetuning_v1/output_dir/
