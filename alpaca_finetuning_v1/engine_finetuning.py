@@ -70,6 +70,19 @@ def train_one_epoch(
             log_writer.add_scalar("c_train_loss", c_loss_value_reduce, epoch_1000x)
             log_writer.add_scalar("lr", lr, epoch_1000x)
 
+            # log out learnable gate variable
+            # self.gate = torch.nn.Parameter(torch.zeros(1, self.n_local_heads, 1, 1))
+            gates = [  _layer.attention.gate.squeeze().tolist()  for _layer in  model.module.layers]
+            gates = [ { f"g_layer_{layer_i}_h_{head_i}": _gh for head_i,_gh in enumerate(g)} for layer_i,g in enumerate(gates)]
+            # flatten nested list
+            output_gates_results = {}
+            for g in gates:
+                output_gates_results.update(g)
+            del gates
+            for k in output_gates_results:
+                log_writer.add_scalar(k, output_gates_results[k], epoch_1000x)
+            
+
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)
